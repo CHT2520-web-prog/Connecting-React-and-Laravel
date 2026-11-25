@@ -50,7 +50,8 @@ label {
   width: 80px;
 }
 
-input {
+input,
+select {
   padding: 6px;
   font-size: 16px;
 }

@@ -12,11 +12,23 @@ import FilmDetails from "./components/FilmDetails";
 import CreateFilm from "./components/CreateFilm";
 
 const initialFilms = [
-  { id: 1, title: "The Incredibles", year: 2004, duration: 115 },
-  { id: 2, title: "Spirited Away", year: 2001, duration: 125 },
-  { id: 3, title: "Mean Girls", year: 2004, duration: 97 },
-  { id: 4, title: "Finding Nemo", year: 2003, duration: 100 },
-  { id: 5, title: "The Dark Knight", year: 2008, duration: 152 },
+  {
+    id: 1,
+    title: "The Incredibles",
+    year: 2004,
+    duration: 115,
+    certificate: 1,
+  },
+  { id: 2, title: "Spirited Away", year: 2001, duration: 125, certificate: 2 },
+  { id: 3, title: "Mean Girls", year: 2004, duration: 97, certificate: 3 },
+  { id: 4, title: "Finding Nemo", year: 2003, duration: 100, certificate: 1 },
+  {
+    id: 5,
+    title: "The Dark Knight",
+    year: 2008,
+    duration: 152,
+    certificate: 3,
+  },
 ];
 
 function App() {

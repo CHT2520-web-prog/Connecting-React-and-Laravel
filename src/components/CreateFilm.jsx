@@ -8,6 +8,7 @@ const CreateFilm = ({ onFilmAdd }) => {
       title: formData.get("title"),
       year: Number(formData.get("year")),
       duration: Number(formData.get("duration")),
+      certificate: Number(formData.get("certificate")),
     };
     onFilmAdd(newFilm);
     event.target.reset();
@@ -28,6 +29,16 @@ const CreateFilm = ({ onFilmAdd }) => {
         <div>
           <label htmlFor="duration">Duration:</label>
           <input type="number" id="duration" name="duration" />
+        </div>
+        <div>
+          <label htmlFor="certificate">Certificate:</label>
+          <select id="certificate" name="certificate">
+            <option value="1">U</option>
+            <option value="1">PG</option>
+            <option value="2">12</option>
+            <option value="3">15</option>
+            <option value="4">18</option>
+          </select>
         </div>
         <div>
           <button type="submit">SAVE THE FILM</button>
