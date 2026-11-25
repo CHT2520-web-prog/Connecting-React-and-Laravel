@@ -1,0 +1,70 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  margin: 30px;
+}
+
+/* Headings */
+
+h2 {
+  margin-bottom: 15px;
+}
+
+/* Navigation */
+
+nav {
+  margin-bottom: 30px;
+}
+
+nav a {
+  margin-right: 20px;
+  color: #2563a6;
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Film list */
+
+.film-list div {
+  margin-bottom: 10px;
+}
+
+a {
+  padding: 1rem;
+  color: #2563a6;
+}
+
+/* Forms */
+
+form div {
+  margin-bottom: 15px;
+}
+
+label {
+  display: inline-block;
+  width: 80px;
+}
+
+input {
+  padding: 6px;
+  font-size: 16px;
+}
+
+/* Buttons */
+
+button {
+  padding: 7px 12px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.page {
+  border: 1px solid black;
+  padding: 1rem;
+  margin: 1rem;
+}
