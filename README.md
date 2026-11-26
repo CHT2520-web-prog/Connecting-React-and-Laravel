@@ -1,6 +1,8 @@
 # Connecting React and Laravel
 
-Previously we built an SPA using React. In this practical we will look connecting this app to a Laravel API back-end.
+Previously we built an SPA using React. In this practical we will look at connecting this app to a Laravel API back-end.
+
+React will be responsible for the user interface, Laravel will be responsible for the application logic and peristing data, and the two will communicate through an HTTP API using JSON.
 
 ## Making a Laravel API
 
@@ -352,7 +354,7 @@ useEffect(() => {
 }, []);
 ```
 
-[useEffect](https://react.dev/reference/react/useEffect) is a React Hook that lets you run code as a side effect of rendering a component. In this case, tt tells React that once the component has rendered, run this code.
+[useEffect](https://react.dev/reference/react/useEffect) is a React Hook that lets you run code as a side effect of rendering a component. In this case, it tells React that once the component has rendered, run this code.
 
 Test the react app in a browser, the list of films should now be coming from the Laravel API.
 
@@ -373,9 +375,9 @@ const addFilm = async (newFilm) => {
 
 This calls the `createFilm()` function in _filmService.js_ which makes a `fetch` POST request to add a new film.
 
-The `addFilm` function then call `getFilms()` again to reload the list of films from the back-end.
+The `addFilm` function then calls `getFilms()` again to reload the list of films from the back-end.
 
-> This adopts the approach of the API being the source of truth. Alternatively, we could update the films locally, but we the front-end can get out of sync with the backend.
+> This adopts the approach of the API being the source of truth. Alternatively, we could update the films locally.
 
 Test this works, you should be able to add a new film.
 
@@ -392,7 +394,7 @@ const deleteFilm = async (deleteId) => {
 };
 ```
 
-Like the `addFilm` function this calls a function from the filmService.js (`destroyFilm`) and then request the list of films again.
+Like the `addFilm` function this calls a function from the filmService.js (`destroyFilm`) and then requests the list of films again.
 
 Test the app. You find the user can view, create and delete film.
 
@@ -404,9 +406,24 @@ We can display a message to the user to give them some feedback.
 
 In the `App` component we'll add a new state variable, `loading`, and we'll use this to display a message to the user
 
-Modify the App component to add the `loading` variable conditionally render a loading message.
+Modify the App component to add the `loading` variable and conditionally render a loading message.
 
 ```js
+import { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import FilmList from "./components/FilmList";
+import FilmDetails from "./components/FilmDetails";
+import CreateFilm from "./components/CreateFilm";
+
+import { getFilms, createFilm, destroyFilm } from "./services/filmService";
+
 function App() {
   const navigate = useNavigate();
   const [films, setFilms] = useState([]);
@@ -418,26 +435,32 @@ function App() {
       setFilms(films);
       setLoading(false);
     };
-
     loadFilms();
   }, []);
 
   const addFilm = async (newFilm) => {
     setLoading(true);
-    await createFilm(newFilm);
-    const films = await getFilms();
-    setFilms(films);
-    setLoading(false);
-    navigate("/");
+    try {
+      await createFilm(newFilm);
+      const films = await getFilms();
+      setFilms(films);
+      navigate("/");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteFilm = async (deleteId) => {
     setLoading(true);
-    await destroyFilm(deleteId);
-    const films = await getFilms();
-    setFilms(films);
-    setLoading(false);
-    navigate("/");
+    try {
+      await destroyFilm(deleteId);
+      const films = await getFilms();
+      setFilms(films);
+      setLoading(false);
+      navigate("/");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -465,11 +488,32 @@ function App() {
     </div>
   );
 }
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
+export default AppWrapper;
 ```
 
 Before each call to the API we set `loading` to be true.
 
-Once we have the response from the API we set `loading` to be false.
+We wrap the asynchronous function call in a `try...finally` block. The `finally` block will always execute, setting `loading` to false, even if the request fails.
+
+```js
+try {
+  await createFilm(newFilm);
+  const films = await getFilms();
+  setFilms(films);
+  navigate("/");
+} finally {
+  setLoading(false);
+}
+```
 
 When `loading` is true we display a loading message in the UI.
 
@@ -485,7 +529,7 @@ if (loading) {
 
 ## Limitations
 
-Again, this is a fairly rapid overview of connecting a React App to a Laravel back-end. There is plenty of room for improvement and further features to look into.
+This is a fairly rapid overview of connecting a React App to a Laravel back-end. There is plenty of room for improvement and further features to look into.
 
 - The API returns validation error message but we never handle them in the React app.
 - The user experience is still 'clunky'. We show loading messages, but it would be much better if we updated the list of films in the background.
