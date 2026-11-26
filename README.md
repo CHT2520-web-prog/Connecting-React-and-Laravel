@@ -4,7 +4,9 @@ Previously we built an SPA using React. In this practical we will look connectin
 
 ## Making a Laravel API
 
-In Codespaces open your Laravel films app
+You will need a working version of the Laravel films app.
+
+In Codespaces open this Laravel app.
 
 In the terminal enter:
 
@@ -12,11 +14,11 @@ In the terminal enter:
 php artisan install:api
 ```
 
-This will install some libraries, and create some files so that the Laravel app can act as an API.
+This will install some libraries, and create some files so the Laravel app can act as an API. Answer 'yes' to running the database migrations.
 
-- Answer 'yes' to running the database migrations.
+You might get a message _WARN Unable to automatically add API route definition to [bootstrap/app.php]_.
 
-If you get a message _WARN Unable to automatically add API route definition to [bootstrap/app.php]_, open _bootstrap/app.php_ and manually add the api routes file. Find the `withRouting` call and add in `api: __DIR__ . '/../routes/api.php',` i.e.
+If you do, open _bootstrap/app.php_ and manually add the api routes file. Find the `withRouting` call and add in `api: __DIR__ . '/../routes/api.php',` i.e.
 
 ```php
     ->withRouting(
@@ -27,13 +29,13 @@ If you get a message _WARN Unable to automatically add API route definition to [
     )
 ```
 
-Make the api controller:-
+Next, make a controller for the API:
 
 ```
 php artisan make:controller Api/FilmController --api
 ```
 
-Open app/Http/Controllers/Api/FilmController.php and add the following code:-
+Open this file, _app/Http/Controllers/Api/FilmController.php_ and add the following code:-
 
 ```php
 
@@ -51,7 +53,6 @@ class FilmController extends Controller
     public function index()
     {
         $films = Film::all();
-
         return response()->json($films);
     }
     /**
@@ -79,17 +80,13 @@ class FilmController extends Controller
     public function show(int $id)
     {
         $film = Film::find($id);
-
         if (!$film) {
             return response()->json([
                 'message' => 'Film not found'
             ], 404);
         }
-
         return response()->json($film);
     }
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -108,11 +105,11 @@ class FilmController extends Controller
 }
 ```
 
-This is an API version of our original FilmController. It returns JSON responses, not HTML via blade files.
+This is an API version of our original FilmController. Instead of returning HTML via blade files, we return JSON data.
 
 If you look in the _routes_ folder you should find there is new _api.php_ file. This is where we will declare the routes for our API.
 
-At the top import our API `FilmController`.
+At the top of _api.php_ import our new API FilmController.
 
 ```php
 use App\Http\Controllers\Api\FilmController;
@@ -128,7 +125,9 @@ Route::get('/films/{id}', [FilmController::class, 'show']);
 Route::delete('/films/{id}', [FilmController::class, 'destroy']);
 ```
 
-## Test the API
+At this point we are all set-up with our API.
+
+## Testing the API
 
 In the terminal enter:
 
@@ -138,30 +137,31 @@ php artisan serve
 
 Your films app should start, view it in a browser.
 
-Put a route of api/films on the end of the URL
+Put a route of _api/films_ on the end of the URL
 
-You should see json data generated from the database.
+You should see JSON data generated from the database.
 
-Have a look at _api.php_ and the API FilmController index() method. Make sure you understand how this is working.
+Have a look at _api.php_ and the API FilmController `index()` method. Make sure you understand how this is working.
 
-> Note we don't have to specify 'api' in in the routes in _api.php_. Laravel automatically maps routes that feature 'api' to the _api.php_ routes file.
+> Note, we don't have to specify 'api' in the route declarations in _api.php_. Laravel automatically maps routes that feature 'api' to the _api.php_ routes file.
 
 Test the 'show' route e.g. _api/films/3_ you should see the details of a single film.
 
-## Testing the create and delete actions
+### Testing the Create and Delete Actions
 
-How can we do this we need to post some data to the server. to do this we can use a vs code extension
+We can't test the create and delete actions simply by entering a URL in a browser. This make a `GET` request, we need to make `POST` and `DELETE` requests, and we need to send data as part of the request.
 
-click on extensions the blocks
+There are various tools we can use to test an API endpoint. For example, [Postman](https://www.postman.com/).
 
-search for REST Client
-Huachao Mao
+We will use the REST Client extension in VS Code to test our API.
 
-install the extension
+In your Codespace, select Extensions (It looks like a stack of blocks in the Activity Bar)
 
-In the root of the project folder add create a new file call it films.http
+Search for REST Client. Select the one published by Huachao Mao and install it.
 
-enter the following code:-
+In the root of the project folder add create a new file call it _films.http_/
+
+Enter the following code:-
 
 ```
 ### Get all films
@@ -187,7 +187,6 @@ Accept: application/json
 GET http://127.0.0.1:8000/api/films/16
 
 
-
 ###
 
 ### Delete film
@@ -195,66 +194,82 @@ DELETE http://127.0.0.1:8000/api/films/16
 Accept: application/json
 ```
 
-save the file
+Save the file
 
-make sure your laravel is running i.e. php artisan serve
+Make sure your Laravel app is running i.e. `php artisan serve`
 
-In this file before the `GET http://127.0.0.1:8000/api/films` there should be some text that says 'Send Request'
+In _films.http_ file before the `GET http://127.0.0.1:8000/api/films` there should be some text that says 'Send Request'.
 
 Click on this and a new panel should open showing the response from Laravel (a list of films in JSON format)
 
 Click the Create Film 'Send Request' . You should get a response confirming the film has been added
 
-Click the Get All Film 'Send Request' and confirm that the film has been added. Make a note of the new film's ID value.
+Click the Get All Films 'Send Request' again and confirm that the film has been added. Make a note of the new film's ID value.
 
 Experiment with the 'Get individual film' and 'Delete film' requests. You will probably have to adjust the id value in the URL.
 
-If you look in the api filmcontroller you should see that there is some simple user input validation
+If you look in FilmController you should see that there is some simple user input validation
 
 Check this works, try the Create Film request again but this time remove one of the properties, you should get an error message in the response.
 
-## React
+## A React Front-End
 
-Open a new terminal
+In your Codespace, open a new terminal (there is a plus sign on the right-hand side of the terminal panel) and enter the following:
 
 ```
 git clone https://github.com/CHT2520-web-prog/Connecting-React-and-Laravel
 ```
 
+Navigate to this folder:
+
 ```
 cd Connecting-React-and-Laravel/
 ```
+
+Install the React project's dependencies.
 
 ```
 npm install
 ```
 
+Start the React app
+
 ```
 npm run dev
 ```
 
-Test in a browser
+Test the app in a browser. It should be running on port 5173.
 
 This is the same app we worked on previously with a couple of changes
 
-1. have split the components into their own files and used import/export.
-2. I have added a certificate dropdown in the createfilm component. This is to make integration with Laravel easier.
+1. We have split the components into their own files and used `import`/`export` to share functions in the app.
+2. I have added a certificate dropdown in the `CreateFilm` component. This is to make integration with Laravel easier where the `films` table expects a certificate id foreign key.
 
-Problme is the data is hard-coded.
-We want to externalise
-Add a film and refresh the page, the data has gone
+- Test the app. make sure you can add and delete films.
 
-We want to link with the laravel back-end
+Problem with this app is the data is hard-coded and isn't persisted. If we add a film and refresh the page, the data has gone.
 
-In the terminal enter:
+We want to connect this app with the Laravel API.
+
+## Configuring CORS
+
+First we need to tell Laravel to accept request from our React app.
+
+> By default, Laravel blocks cross-origin requests for security i.e. our React app is running on port 5173 (a different port to Laravel's), therefore Laravel will block any requests coming from the app.
+
+You should have two terminals open, one for your Laravel app, and one for your React app.
+
+In the Laravel terminal enter:
 
 ```
 php artisan config:publish cors
 ```
 
+This simply generates a _cors.php_ file where we can whitelist our React app.
+
 Open _config/cors.php_
 
-Eventually we will
+Change the allowed_origins setting to accept requests from our React app.
 
 ```
     'allowed_origins' => [
@@ -262,9 +277,11 @@ Eventually we will
     ],
 ```
 
-Inside the src folder add a new folder, call it 'services'. Inside this folder create a new file called filmServics.js
+## Using `fetch` in our React App
 
-Paste the following code into filmSservice
+In the React app (the Connecting-React-and-Laravel folder), inside the 'src' folder add a new folder, call it 'services'. Inside this folder create a new file called _filmServics.js_.
+
+Paste the following code into _filmService.js_
 
 ```js
 const API_URL = "https://name-of-your-codespace-8000.app.github.dev/api/films";
@@ -306,21 +323,23 @@ export async function destroyFilm(id) {
 }
 ```
 
-In App.jsx add the following line at the top of the paghe to import
+The _filmService.js_ file is a series of functions that make `fetch` requests to our Laravel API.
+
+In _App.jsx_ add the following line at the top of the page to import these functions.
 
 ```js
 import { getFilms, createFilm, destroyFilm } from "./services/filmService";
 ```
 
-Comment out the films array
+Comment out the `initialFilms` array.
 
-Changhe the initialisation to set films to be an empty array.
+Change the initialisation in the `App` component to set `films` to be an empty array.
 
 ```js
 const [films, setFilms] = useState([]);
 ```
 
-Immediately after this line of code inside the App component add the following useEffect hook.
+Immediately after this line of code add the following `useEffect` hook.
 
 ```js
 useEffect(() => {
@@ -333,16 +352,15 @@ useEffect(() => {
 }, []);
 ```
 
-useEffect is a React Hook that lets you run code as a side effect of rendering a component.
-
-In simple terms, it lets you tell React:
-Once the component has rendered, run this code.
+[useEffect](https://react.dev/reference/react/useEffect) is a React Hook that lets you run code as a side effect of rendering a component. In this case, tt tells React that once the component has rendered, run this code.
 
 Test the react app in a browser, the list of films should now be coming from the Laravel API.
 
-Next we need to get the add film functionality to use the laravel back-end
+### Getting Create to Work
 
-Change the addFilm function to:-
+Next, we will get the create film functionality to use the Laravel API.
+
+Change the `addFilm` function to:-
 
 ```js
 const addFilm = async (newFilm) => {
@@ -353,18 +371,17 @@ const addFilm = async (newFilm) => {
 };
 ```
 
-This calls the createFilm() function in filmService.js
-This makes a fetch POST request to the API to add a new film.
-We then need to reload the list of films from the back-end
+This calls the `createFilm()` function in _filmService.js_ which makes a `fetch` POST request to add a new film.
 
-> We could update the films locally, but we can easiliy run into the back-end and front-end running out of sync.
+The `addFilm` function then call `getFilms()` again to reload the list of films from the back-end.
 
-Test this works, you should be able to add a new film
-Check in the react app and in adminer
+> This adopts the approach of the API being the source of truth. Alternatively, we could update the films locally, but we the front-end can get out of sync with the backend.
 
-### getting delete to work
+Test this works, you should be able to add a new film.
 
-Again we need to change the delete Film functionality to use the API. Change deleteFilm to the following
+### Getting Delete to Work
+
+Again we need to change the delete Film functionality to use the API. Change `deleteFilm` to the following
 
 ```js
 const deleteFilm = async (deleteId) => {
@@ -375,27 +392,19 @@ const deleteFilm = async (deleteId) => {
 };
 ```
 
-Like the addFilm function this now calls a function form the filmservuice (destroyFilm)
+Like the `addFilm` function this calls a function from the filmService.js (`destroyFilm`) and then request the list of films again.
 
-Have a look at destroy film, see how it makes a delete request to the API
+Test the app. You find the user can view, create and delete film.
 
-Test the app
+## Adding a Loading Indicator
 
-##
+This works fine but you might find that there is a delay after adding/deleting a film as the React app communicates with the Laravel API.
 
-This works fine but you might find that there is a delay after adding/deleting a film as the react app communicate with the Laravel back end.
+We can display a message to the user to give them some feedback.
 
-We can
+In the `App` component we'll add a new state variable, `loading`, and we'll use this to display a message to the user
 
-In the App component add a new state variable:
-
-We'll use this to display a message to the user
-
-```js
-const [loading, setLoading] = useState(true);
-```
-
-Modify the App componenent to conditionally render a loading message
+Modify the App component to add the `loading` variable conditionally render a loading message.
 
 ```js
 function App() {
@@ -458,21 +467,26 @@ function App() {
 }
 ```
 
-The basic pattern is before each call to the API we set loading to be true
-Once we have the response form the API we set loading to be false
-We then display a loading message is loading is true
+Before each call to the API we set `loading` to be true.
 
-```
+Once we have the response from the API we set `loading` to be false.
+
+When `loading` is true we display a loading message in the UI.
+
+```js
 if (loading) {
-    return (
-      <div className="page">
-        <p>Loading...</p>
-      </div>
-    );
-  }
+  return (
+    <div className="page">
+      <p>Loading...</p>
+    </div>
+  );
+}
 ```
 
 ## Limitations
 
-The API returns validation error message but we neve rhandle them in the Recat app
-Authentication using Sanctum
+Again, this is a fairly rapid overview of connecting a React App to a Laravel back-end. There is plenty of room for improvement and further features to look into.
+
+- The API returns validation error message but we never handle them in the React app.
+- The user experience is still 'clunky'. We show loading messages, but it would be much better if we updated the list of films in the background.
+- The app is very simple. An obvious next step would be to integrate authentication. Laravel uses [Sanctum](https://laravel.com/framework/docs/sanctum), a library for authenticating requests from SPAs.
