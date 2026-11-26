@@ -8,7 +8,7 @@ React will be responsible for the user interface, Laravel will be responsible fo
 
 You will need a working version of the Laravel films app.
 
-In Codespaces open this Laravel app.
+In Codespaces open your Laravel app.
 
 In the terminal enter:
 
@@ -151,11 +151,9 @@ Test the 'show' route e.g. _api/films/3_ you should see the details of a single 
 
 ### Testing the Create and Delete Actions
 
-We can't test the create and delete actions simply by entering a URL in a browser. This make a `GET` request, we need to make `POST` and `DELETE` requests, and we need to send data as part of the request.
+We can't test the create and delete actions simply by entering a URL in a browser. We need to make `POST` and `DELETE` requests, and we need to send data as part of the request.
 
-There are various tools we can use to test an API endpoint. For example, [Postman](https://www.postman.com/).
-
-We will use the REST Client extension in VS Code to test our API.
+There are various tools we can use to test an API endpoint. For example, [Postman](https://www.postman.com/). We will use the REST Client extension in VS Code to test our API.
 
 In your Codespace, select Extensions (It looks like a stack of blocks in the Activity Bar)
 
@@ -244,8 +242,8 @@ Test the app in a browser. It should be running on port 5173.
 
 This is the same app we worked on previously with a couple of changes
 
-1. We have split the components into their own files and used `import`/`export` to share functions in the app.
-2. I have added a certificate dropdown in the `CreateFilm` component. This is to make integration with Laravel easier where the `films` table expects a certificate id foreign key.
+1. We have split the components into their own files and used `import`/`export` to to import the components into App.jsx.
+2. I have added a certificate dropdown in the `CreateFilm` component. This is to make integration with Laravel easier where the `films` table expects a `certificate_id` foreign key.
 
 - Test the app. make sure you can add and delete films.
 
@@ -281,7 +279,7 @@ Change the allowed_origins setting to accept requests from our React app.
 
 ## Using `fetch` in our React App
 
-In the React app (the Connecting-React-and-Laravel folder), inside the 'src' folder add a new folder, call it 'services'. Inside this folder create a new file called _filmServics.js_.
+In the React app (the Connecting-React-and-Laravel folder), inside the 'src' folder add a new folder, call it 'services'. Inside this folder create a new file called _filmServices.js_.
 
 Paste the following code into _filmService.js_
 
@@ -373,9 +371,9 @@ const addFilm = async (newFilm) => {
 };
 ```
 
-This calls the `createFilm()` function in _filmService.js_ which makes a `fetch` POST request to add a new film.
+This calls the `createFilm` function from _filmService.js_ which makes a `fetch` POST request to add a new film.
 
-The `addFilm` function then calls `getFilms()` again to reload the list of films from the back-end.
+The `addFilm` function then calls `getFilms` again to reload the list of films from the back-end.
 
 > This adopts the approach of the API being the source of truth. Alternatively, we could update the films locally.
 
@@ -396,7 +394,7 @@ const deleteFilm = async (deleteId) => {
 
 Like the `addFilm` function this calls a function from the filmService.js (`destroyFilm`) and then requests the list of films again.
 
-Test the app. You find the user can view, create and delete film.
+Test the app. You should find the user can view, create and delete film.
 
 ## Adding a Loading Indicator
 
@@ -406,7 +404,7 @@ We can display a message to the user to give them some feedback.
 
 In the `App` component we'll add a new state variable, `loading`, and we'll use this to display a message to the user
 
-Modify the App component to add the `loading` variable and conditionally render a loading message.
+Modify the App component to add use the `loading` variable and conditionally render a loading message. App.jsx will then look like the following:
 
 ```js
 import { useState, useEffect } from "react";
@@ -502,7 +500,7 @@ export default AppWrapper;
 
 Before each call to the API we set `loading` to be true.
 
-We wrap the asynchronous function call in a `try...finally` block. The `finally` block will always execute, setting `loading` to false, even if the request fails.
+We wrap the asynchronous function call in a `try...finally` block. The `finally` block will always execute, setting `loading` to false once the request completes, even if the request fails.
 
 ```js
 try {
